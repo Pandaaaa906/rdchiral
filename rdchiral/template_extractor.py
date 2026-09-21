@@ -11,8 +11,8 @@ MAXIMUM_NUMBER_UNMAPPED_PRODUCT_ATOMS = 5
 INCLUDE_ALL_UNMAPPED_REACTANT_ATOMS = True
 
 def mols_from_smiles_list(all_smiles):
-    '''Given a list of smiles strings, this function creates rdkit
-    molecules'''
+    """Given a list of smiles strings, this function creates rdkit
+    molecules"""
     mols = []
     for smiles in all_smiles:
         if not smiles: continue
@@ -27,8 +27,8 @@ def clear_mapnum(mol):
     return mol
 
 def get_tagged_atoms_from_mols(mols):
-    '''Takes a list of RDKit molecules and returns total list of
-    atoms and their tags'''
+    """Takes a list of RDKit molecules and returns total list of
+    atoms and their tags"""
     atoms = []
     atom_tags = []
     for mol in mols:
@@ -38,8 +38,8 @@ def get_tagged_atoms_from_mols(mols):
     return atoms, atom_tags
 
 def get_tagged_atoms_from_mol(mol):
-    '''Takes an RDKit molecule and returns list of tagged atoms and their
-    corresponding numbers'''
+    """Takes an RDKit molecule and returns list of tagged atoms and their
+    corresponding numbers"""
     atoms = []
     atom_tags = []
     for atom in mol.GetAtoms():
@@ -49,7 +49,7 @@ def get_tagged_atoms_from_mol(mol):
     return atoms, atom_tags
 
 def atoms_are_different(atom1, atom2):
-    '''Compares two RDKit atoms based on basic properties'''
+    """Compares two RDKit atoms based on basic properties"""
 
     if atom1.GetAtomicNum() != atom2.GetAtomicNum(): return True # must be true for atom mapping
     if atom1.GetTotalNumHs() != atom2.GetTotalNumHs(): return True
@@ -95,8 +95,8 @@ def set_isotope_to_equal_mapnum(mol):
             a.SetIsotope(int(a.GetProp('molAtomMapNumber')))
             
 def get_frag_around_tetrahedral_center(mol, idx):
-    '''Builds a MolFragment using neighbors of a tetrahedral atom,
-    where the molecule has already been updated to include isotopes'''
+    """Builds a MolFragment using neighbors of a tetrahedral atom,
+    where the molecule has already been updated to include isotopes"""
     ids_to_include = [idx]
     for neighbor in mol.GetAtomWithIdx(idx).GetNeighbors():
         ids_to_include.append(neighbor.GetIdx())
@@ -107,9 +107,9 @@ def get_frag_around_tetrahedral_center(mol, idx):
                                    allHsExplicit=True)
             
 def check_tetrahedral_centers_equivalent(atom1, atom2):
-    '''Checks to see if tetrahedral centers are equivalent in
+    """Checks to see if tetrahedral centers are equivalent in
     chirality, ignoring the ChiralTag. Owning molecules of the
-    input atoms must have been Isotope-mapped'''
+    input atoms must have been Isotope-mapped"""
     atom1_frag = get_frag_around_tetrahedral_center(atom1.GetOwningMol(), atom1.GetIdx())
     atom1_neighborhood = Chem.MolFromSmiles(atom1_frag, sanitize=False)
     for matched_ids in atom2.GetOwningMol().GetSubstructMatches(atom1_neighborhood, useChirality=True):
@@ -121,7 +121,7 @@ def clear_isotope(mol):
     [a.SetIsotope(0) for a in mol.GetAtoms()]
 
 def get_changed_atoms(reactants, products):
-    '''Looks at mapped atoms in a reaction and determines which ones changed'''
+    """Looks at mapped atoms in a reaction and determines which ones changed"""
 
     err = 0
     prod_atoms, prod_atom_tags = get_tagged_atoms_from_mols(products)
@@ -216,14 +216,14 @@ def get_changed_atoms(reactants, products):
     return changed_atoms, changed_atom_tags, err
 
 def get_special_groups(mol):
-    '''Given an RDKit molecule, this function returns a list of tuples, where
-    each tuple contains the AtomIdx's for a special group of atoms which should 
-    be included in a fragment all together. This should only be done for the 
+    """Given an RDKit molecule, this function returns a list of tuples, where
+    each tuple contains the AtomIdx's for a special group of atoms which should
+    be included in a fragment all together. This should only be done for the
     reactants, otherwise the products might end up with mapping mismatches
 
     We draw a distinction between atoms in groups that trigger that whole
     group to be included, and "unimportant" atoms in the groups that will not
-    be included if another atom matches.'''
+    be included if another atom matches."""
 
     # Define templates
     group_templates = [ 
@@ -278,10 +278,10 @@ def get_special_groups(mol):
     return groups
 
 def expand_atoms_to_use(mol, atoms_to_use, groups=[], symbol_replacements=[]):
-    '''Given an RDKit molecule and a list of AtomIdX which should be included
+    """Given an RDKit molecule and a list of AtomIdX which should be included
     in the reaction, this function expands the list of AtomIdXs to include one 
     nearest neighbor with special consideration of (a) unimportant neighbors and
-    (b) important functional groupings'''
+    (b) important functional groupings"""
 
     # Copy
     new_atoms_to_use = atoms_to_use[:]
@@ -314,9 +314,9 @@ def expand_atoms_to_use(mol, atoms_to_use, groups=[], symbol_replacements=[]):
     return new_atoms_to_use, symbol_replacements
 
 def expand_atoms_to_use_atom(mol, atoms_to_use, atom_idx, groups=[], symbol_replacements=[]):
-    '''Given an RDKit molecule and a list of AtomIdx which should be included
+    """Given an RDKit molecule and a list of AtomIdx which should be included
     in the reaction, this function extends the list of atoms_to_use by considering 
-    a candidate atom extension, atom_idx'''
+    a candidate atom extension, atom_idx"""
 
     # See if this atom belongs to any special groups (highest priority)
     found_in_group = False
@@ -356,10 +356,10 @@ def expand_atoms_to_use_atom(mol, atoms_to_use, atom_idx, groups=[], symbol_repl
     return atoms_to_use, symbol_replacements
 
 def convert_atom_to_wildcard(atom):
-    '''This function takes an RDKit atom and turns it into a wildcard 
+    """This function takes an RDKit atom and turns it into a wildcard
     using heuristic generalization rules. This function should be used
     when candidate atoms are used to extend the reaction core for higher
-    generalizability'''
+    generalizability"""
 
     # Is this a terminal atom? We can tell if the degree is one
     if atom.GetDegree() == 1:
@@ -404,9 +404,9 @@ def convert_atom_to_wildcard(atom):
     return symbol
 
 def reassign_atom_mapping(transform):
-    '''This function takes an atom-mapped reaction SMILES and reassigns 
+    """This function takes an atom-mapped reaction SMILES and reassigns
     the atom-mapping labels (numbers) from left to right, once 
-    that transform has been canonicalized.'''
+    that transform has been canonicalized."""
 
     all_labels = re.findall(r'\:([0-9]+)\]', transform)
 
@@ -428,10 +428,10 @@ def reassign_atom_mapping(transform):
     return transform_newmaps
 
 def get_strict_smarts_for_atom(atom):
-    '''
+    """
     For an RDkit atom object, generate a SMARTS pattern that
     matches the atom as strictly as possible
-    '''
+    """
 
     symbol = atom.GetSmarts()
     if atom.GetSymbol() == 'H':
@@ -481,10 +481,10 @@ def get_strict_smarts_for_atom(atom):
     return symbol
 
 def expand_changed_atom_tags(changed_atom_tags, reactant_fragments):
-    '''Given a list of changed atom tags (numbers as strings) and a string consisting
+    """Given a list of changed atom tags (numbers as strings) and a string consisting
     of the reactant_fragments to include in the reaction transform, this function 
     adds any tagged atoms found in the reactant side of the template to the 
-    changed_atom_tags list so that those tagged atoms are included in the products'''
+    changed_atom_tags list so that those tagged atoms are included in the products"""
 
     expansion = []
     atom_tags_in_reactant_fragments = re.findall(r'\:([0-9]+)\]', reactant_fragments)
@@ -496,13 +496,13 @@ def expand_changed_atom_tags(changed_atom_tags, reactant_fragments):
 
 def get_fragments_for_changed_atoms(mols, changed_atom_tags, radius=0, 
     category='reactants', expansion=[]):
-    '''Given a list of RDKit mols and a list of changed atom tags, this function
+    """Given a list of RDKit mols and a list of changed atom tags, this function
     computes the SMILES string of molecular fragments using MolFragmentToSmiles 
     for all changed fragments.
 
     expansion: atoms added during reactant expansion that should be included and
                generalized in product fragment
-    '''
+    """
     fragments = ''
     mols_changed = []
     for mol in mols:
@@ -641,18 +641,18 @@ def get_fragments_for_changed_atoms(mols, changed_atom_tags, radius=0,
     return fragments[:-1], intra_only, dimer_only
 
 def canonicalize_transform(transform):
-    '''This function takes an atom-mapped SMARTS transform and
+    """This function takes an atom-mapped SMARTS transform and
     converts it to a canonical form by, if nececssary, rearranging
     the order of reactant and product templates and reassigning
-    atom maps.'''
+    atom maps."""
 
     transform_reordered = '>>'.join([canonicalize_template(x) for x in transform.split('>>')])
     return reassign_atom_mapping(transform_reordered)
 
 def canonicalize_template(template):
-    '''This function takes one-half of a template SMARTS string 
+    """This function takes one-half of a template SMARTS string
     (i.e., reactants or products) and re-orders them based on
-    an equivalent string without atom mapping.'''
+    an equivalent string without atom mapping."""
 
     # Strip labels to get sort orders
     template_nolabels = re.sub(r'\:[0-9]+\]', ']', template)
@@ -682,8 +682,8 @@ def canonicalize_template(template):
     return template
 
 def bond_to_label(bond):
-    '''This function takes an RDKit bond and creates a label describing
-    the most important attributes'''
+    """This function takes an RDKit bond and creates a label describing
+    the most important attributes"""
     a1_label = str(bond.GetBeginAtom().GetAtomicNum())
     a2_label = str(bond.GetEndAtom().GetAtomicNum())
     if bond.GetBeginAtom().HasProp('molAtomMapNumber'):

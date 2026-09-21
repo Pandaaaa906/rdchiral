@@ -10,14 +10,14 @@ BondDirLabel    = {AllChem.BondDir.ENDUPRIGHT: '\\',
                    AllChem.BondDir.ENDDOWNRIGHT: '/'}
 
 def bond_dirs_by_mapnum(mol):
-    '''Determine BondDir for atom mapped atoms in an RDKit molecule
+    """Determine BondDir for atom mapped atoms in an RDKit molecule
 
     Args:
         mol (rdkit.Chem.rdchem.Mol): RDKit molecule to determine BondDirs
 
     Returns:
        dict: Mapping from (atom_map1, atom_map2) -> BondDir
-    '''
+    """
     bond_dirs_by_mapnum = {}
     for b in mol.GetBonds():
         i = None; j = None
@@ -222,14 +222,14 @@ def enumerate_possible_cistrans_defs(template_r, labeling_func=lambda a: a.GetAt
     return required_bond_defs, required_bond_defs_coreatoms
 
 def get_atoms_across_double_bonds(mol, labeling_func=lambda a: a.GetAtomMapNum()):
-    '''This function takes a molecule and returns a list of cis/trans specifications
+    """This function takes a molecule and returns a list of cis/trans specifications
     according to the following:
 
     (mapnums, dirs)
 
     where atoms = (a1, a2, a3, a4) and dirs = (d1, d2)
     and (a1, a2) defines the ENDUPRIGHT/ENDDOWNRIGHT direction of the "front"
-    of the bond using d1, and (a3, a4) defines the direction of the "back" of 
+    of the bond using d1, and (a3, a4) defines the direction of the "back" of
     the bond using d2.
 
     This is used to initialize reactants with a SINGLE definition constraining
@@ -246,12 +246,12 @@ def get_atoms_across_double_bonds(mol, labeling_func=lambda a: a.GetAtomMapNum()
 
     Args:
         mol (rdkit.Chem.rdchem.Mol): RDKit molecule
-        labeling_func (callable): Callable function to label an atom. 
+        labeling_func (callable): Callable function to label an atom.
             Function should take an atom and return an int.
 
     Returns:
         list: atoms_across_double_bonds
-    '''
+    """
     atoms_across_double_bonds = []
     atomrings = None
 
@@ -343,7 +343,7 @@ def get_atoms_across_double_bonds(mol, labeling_func=lambda a: a.GetAtomMapNum()
     return atoms_across_double_bonds
 
 def restore_bond_stereo_to_sp2_atom(a, bond_dirs_by_mapnum):
-    '''Copy over single-bond directions (ENDUPRIGHT, ENDDOWNRIGHT) to 
+    r"""Copy over single-bond directions (ENDUPRIGHT, ENDDOWNRIGHT) to
     the single bonds attached to some double-bonded atom, a
 
     In some cases, like C=C/O>>C=C/Br, we should assume that stereochem was
@@ -360,7 +360,7 @@ def restore_bond_stereo_to_sp2_atom(a, bond_dirs_by_mapnum):
             the mapnum tuples will be missing from the dict
     Returns:
         bool: Returns Trueif a bond direction was copied
-    '''
+    """
 
     for bond_to_spec in a.GetBonds():
         if (bond_to_spec.GetOtherAtom(a).GetAtomMapNum(), a.GetAtomMapNum()) in bond_dirs_by_mapnum:
