@@ -32,7 +32,7 @@ def bond_dirs_by_mapnum(mol):
     return bond_dirs_by_mapnum
 
 def enumerate_possible_cistrans_defs(template_r, labeling_func=lambda a: a.GetAtomMapNum()):
-    '''This function is meant to take a reactant template and fully enumerate
+    r"""This function is meant to take a reactant template and fully enumerate
     all the ways in which different double-bonds can have their cis/trans
     chirality specified (based on labeling_func). This is necessary because
     double-bond chirality cannot be specified using cis/trans (global properties)
@@ -69,12 +69,12 @@ def enumerate_possible_cistrans_defs(template_r, labeling_func=lambda a: a.GetAt
 
     Args:
         template_r: reactant template
-        labeling_func (callable): Callable function to label an atom. 
+        labeling_func (callable): Callable function to label an atom.
             Function should take an atom and return an int.
-    
+
     Returns:
         (dict, set): Returns required_bond_defs and required_bond_defs_coreatoms
-    '''
+    """
 
     required_bond_defs = {}
     required_bond_defs_coreatoms = set()
@@ -281,7 +281,7 @@ def get_atoms_across_double_bonds(mol, labeling_func=lambda a: a.GetAtomMapNum()
         back_mapnums = None 
         back_dir = None
         is_implicit = False 
-        bab = None; bbb = None;
+        bab = None; bbb = None
         for bab in (z for z in ba.GetBonds() if z.GetBondType() != BondType.DOUBLE):
             if bab.GetBondDir() != BondDir.NONE:
                 front_mapnums = (labeling_func(bab.GetBeginAtom()), labeling_func(bab.GetEndAtom()))
